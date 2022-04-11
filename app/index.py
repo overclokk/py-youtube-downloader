@@ -24,9 +24,9 @@ def main():
     # parser.add_argument("--clipboard", help="Copies video link from clipboard")
     # parser.add_argument("--file", help="Gets video and timestamps from a file")
 
-    args = parser.parse_args();
+    args = parser.parse_args()
     getClip(args.video, args.cut)
-    
+
 
 # Downloads a video and generates a clip based on the timestamp range given
 def getClip(videoURL, timeRange):
