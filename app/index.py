@@ -1,4 +1,5 @@
 # import win32clipboard
+from functions import get_seconds
 from pytube.cli import on_progress
 from pytube import YouTube
 from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
@@ -21,8 +22,8 @@ import os
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-v", "--video", help="Link of the video to download", required=True)
-    parser.add_argument("-c", "--cut", help="Timestamp range to cut", required=True)
+    parser.add_argument("-v", "--video", help="Link of the youtube video to download", required=True)
+    parser.add_argument("-c", "--cut", help="Timestamp range to cut, Format: [HH:]MM:SS,[HH:]MM:SS", required=True)
     # parser.add_argument("--clipboard", help="Copies video link from clipboard")
     # parser.add_argument("--file", help="Gets video and timestamps from a file")
 
@@ -31,14 +32,14 @@ def main():
 
 
 # Downloads a video and generates a clip based on the timestamp range given
-def getClip(videoURL, timeRange):
+def getClip(videoURL: str, timeRange: str):
     try:
         # where to save
-        SAVE_PATH = "video"
+        save_path = "video"
 
         yt = YouTube(videoURL, on_progress_callback=on_progress)
-        timeCuts = getTimestamps(timeRange)
-        print('Title :', yt.title)
+        # timeCuts = getTimestamps(timeRange)
+        # timeCuts = get_seconds(timeRange.split(','))
         # print('Available formats :')
         # for stream in yt.streams.all():
         # print(stream)
@@ -46,15 +47,18 @@ def getClip(videoURL, timeRange):
         # itag = input('\nEnter the itag number to download video of that format: ')
         # stream = yt.streams.get_by_itag( itag )
         stream = yt.streams.get_highest_resolution()
+        file_path = save_path + os.path.sep + stream.default_filename
 
-        print('\nDownloading--- ' + yt.title + ' into location : ' + SAVE_PATH)
-        stream.download(SAVE_PATH)
+        print('\nDownloading--- ' + yt.title + ' into location : ' + file_path)
+        stream.download(save_path)
 
-        print(stream.default_filename)
-        input_video_path = stream.default_filename
-
-        ffmpeg_extract_subclip(SAVE_PATH + os.path.sep + input_video_path, int(timeCuts[0]), int(timeCuts[1]),
-                               targetname="clip.mp4")
+        time = timeRange.split(',')
+        ffmpeg_extract_subclip(
+            file_path,
+            get_seconds( time[0] ),
+            get_seconds( time[1] ),
+            targetname="clip.mp4"
+        )
 
         input('Hit Enter to exit')
     except Exception as e:
