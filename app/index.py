@@ -1,8 +1,10 @@
 # import win32clipboard
+from pytube.cli import on_progress
 from pytube import YouTube
 from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
 import argparse
 import os
+
 
 # https://superuser.com/questions/1567253/how-to-download-chapters-of-a-youtube-video-as-separate-video-files
 
@@ -31,12 +33,12 @@ def main():
 # Downloads a video and generates a clip based on the timestamp range given
 def getClip(videoURL, timeRange):
     try:
-        #where to save
+        # where to save
         SAVE_PATH = "video"
 
-        yt = YouTube( videoURL )
+        yt = YouTube(videoURL, on_progress_callback=on_progress)
         timeCuts = getTimestamps(timeRange)
-        print( 'Title :', yt.title )
+        print('Title :', yt.title)
         # print('Available formats :')
         # for stream in yt.streams.all():
         # print(stream)
@@ -45,18 +47,20 @@ def getClip(videoURL, timeRange):
         # stream = yt.streams.get_by_itag( itag )
         stream = yt.streams.get_highest_resolution()
 
-        print( '\nDownloading--- ' + yt.title + ' into location : ' + SAVE_PATH )
-        stream.download( SAVE_PATH )
+        print('\nDownloading--- ' + yt.title + ' into location : ' + SAVE_PATH)
+        stream.download(SAVE_PATH)
 
-        print( stream.default_filename )
+        print(stream.default_filename)
         input_video_path = stream.default_filename
 
-        ffmpeg_extract_subclip( SAVE_PATH + os.path.sep + input_video_path, int(timeCuts[0]), int(timeCuts[1]), targetname="clip.mp4")
+        ffmpeg_extract_subclip(SAVE_PATH + os.path.sep + input_video_path, int(timeCuts[0]), int(timeCuts[1]),
+                               targetname="clip.mp4")
 
         input('Hit Enter to exit')
     except Exception as e:
-        print("Error",e) #to handle exception
+        print("Error", e)  # to handle exception
         input('Hit Enter to exit')
+
 
 # Separates timestamp range
 def getTimestamps(timeRange):
