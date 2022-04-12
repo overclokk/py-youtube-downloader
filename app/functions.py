@@ -27,17 +27,25 @@ def parse_lines(lines: list) -> list:
     for line in lines:
         stripped_line = line.strip()
 
-        # Continue in case line start with a string: Es: "Some description 1234"
+        # Continue in case line start with a letter
         if not stripped_line[:1].isdigit():
             continue
 
-        # Continue in case the third char is not a colon: Es "523"
         colon_position = stripped_line.find(':')
-        if not colon_position == 2:
+        # Continue in case there is no colon : in the line
+        if colon_position < 1:
             continue
 
-        # Continue in case the fourth char is not a digit: Es "19:0"
-        if not stripped_line[3].isdigit():
+        # Continue in case colon : is not in the right position (second or third position)
+        if colon_position > 3:
+            continue
+
+        # Continue in case first char after colon is not a digit
+        if not stripped_line[colon_position+1].isdigit():
+            continue
+
+        # Continue in case second char after colon is not a digit
+        if not stripped_line[colon_position+2].isdigit():
             continue
 
         # If line is in the chapter format we have a space

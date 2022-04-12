@@ -26,11 +26,11 @@ class FunctionsTestCase(unittest.TestCase):
     def test_get_timestamps_from_file_with_chapters_format(self):
         file_content = parse_file('fixtures/chapters.txt')
         self.assertEqual(
-            [['00:15'], ['00:16'], ['00:17'], ['00:18'], ['00:19']],
+            [['0:00'], ['00:00'], ['00:15'], ['00:16'], ['00:17'], ['00:18'], ['00:19']],
             file_content,
             ''
         )
-        self.assertEqual(5, len(file_content), '')
+        self.assertEqual(7, len(file_content), '')
 
     def test_format_conversion(self):
         actual = [['00:15'], ['00:16'], ['00:17'], ['00:18'], ['00:19']]

@@ -2,6 +2,8 @@
 Testo
 Altro testo
 
+0:00 Some random text 565
+00:00 Some random text 565
 00:15 Some random text 565
 00:16 Some random text 565
 00:17 Some random text 565
@@ -13,3 +15,6 @@ Another text in the footer 15
 1954 text in the footer 15
 1:9 text in the footer 15
 19: text in the footer 15
+:01 text
+1 text
+:
