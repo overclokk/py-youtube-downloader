@@ -1,10 +1,11 @@
 # import win32clipboard
-from functions import get_seconds
-from pytube.cli import on_progress
-from pytube import YouTube
-from moviepy.video.io.ffmpeg_tools import ffmpeg_extract_subclip
 import argparse
 import os
+
+from pytube import YouTube
+from pytube.cli import on_progress
+
+from functions import generate_clips
 
 
 # https://superuser.com/questions/1567253/how-to-download-chapters-of-a-youtube-video-as-separate-video-files
@@ -28,18 +29,17 @@ def main():
     # parser.add_argument("--file", help="Gets video and timestamps from a file")
 
     args = parser.parse_args()
-    getClip(args.video, args.cut)
+    getClip(args.video, [args.cut.split(',')])
 
 
 # Downloads a video and generates a clip based on the timestamp range given
-def getClip(videoURL: str, timeRange: str):
+def getClip(videoURL: str, timeRange: list):
     try:
         # where to save
         save_path = "video"
 
         yt = YouTube(videoURL, on_progress_callback=on_progress)
-        # timeCuts = getTimestamps(timeRange)
-        # timeCuts = get_seconds(timeRange.split(','))
+
         # print('Available formats :')
         # for stream in yt.streams.all():
         # print(stream)
@@ -50,25 +50,17 @@ def getClip(videoURL: str, timeRange: str):
         file_path = save_path + os.path.sep + stream.default_filename
 
         print('\nDownloading--- ' + yt.title + ' into location : ' + file_path)
-        stream.download(save_path)
 
-        time = timeRange.split(',')
-        ffmpeg_extract_subclip(
-            file_path,
-            get_seconds( time[0] ),
-            get_seconds( time[1] ),
-            targetname="clip.mp4"
-        )
+        # desc_lines = yt.description.splitlines()
+        # timeRange = convert_chapter_format_to_start_end_format(parse_lines(desc_lines))
+
+        stream.download(save_path)
+        generate_clips(file_path, timeRange)
 
         input('Hit Enter to exit')
     except Exception as e:
         print("Error", e)  # to handle exception
         input('Hit Enter to exit')
-
-
-# Separates timestamp range
-def getTimestamps(timeRange):
-    return timeRange.rsplit(":")
 
 
 if __name__ == "__main__":
