@@ -1,13 +1,10 @@
-from typing import List
-
-
 class Menu:
     options = {}
 
     def __init__(self) -> None:
         pass
 
-    def getOption(self) -> List:
+    def getOption(self) -> dict:
         return self.options
     
     def addOption(self, key, func) -> None:
