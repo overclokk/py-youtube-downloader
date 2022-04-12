@@ -5,7 +5,7 @@ import os
 from pytube import YouTube
 from pytube.cli import on_progress
 
-from functions import generate_clips
+from app.utils.functions import generate_clips
 
 
 # https://superuser.com/questions/1567253/how-to-download-chapters-of-a-youtube-video-as-separate-video-files
