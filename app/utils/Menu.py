@@ -1,3 +1,6 @@
+from typing import Callable
+
+
 class Menu:
     options = {}
 
@@ -7,8 +10,8 @@ class Menu:
     def getOption(self) -> dict:
         return self.options
     
-    def addOption(self, key, func) -> None:
+    def addOption(self, key: int, func: Callable) -> None:
         self.options.update(key, func)
 
-    def rmvOption(self, key) -> None:
+    def rmvOption(self, key: int) -> None:
         del self.options[key]
