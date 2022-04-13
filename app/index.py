@@ -1,5 +1,5 @@
 # import win32clipboard
-import argparse
+# import argparse
 import os
 
 from pytube import YouTube
@@ -46,8 +46,8 @@ def main():
     )
     menu.getOption()[int(input("Choose an option: "))]()
 
-# TODO: implement
-def clipFromCli():
+# Gets a single clip from video
+def clipFromCli() -> None:
     getClip(
         input("Insert video link: "),
         [input("Insert time range to cut(separated with ','): ").split(',')]
@@ -62,6 +62,7 @@ def clipsFromDesc():
 def clipsFromFile():
     print("Creates clips from file")
 
+# TODO: Refactor it in a way to be able to use a single function for all options
 # Downloads a video and generates a clip based on the timestamp range given
 def getClip(videoURL: str, timeRange: list):
     try:
