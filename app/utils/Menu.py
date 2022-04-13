@@ -1,17 +1,15 @@
-from typing import Callable
-
+# from typing import Callable
 
 class Menu:
-    options = {}
-
-    def __init__(self) -> None:
-        pass
+    def __init__(self, options) -> None:
+        self._options = options
 
     def getOption(self) -> dict:
-        return self.options
+        return self._options
     
-    def addOption(self, key: int, func: Callable) -> None:
-        self.options.update(key, func)
+    # TODO: fix and add those methods
+    # def addOption(self, key: int, func: Callable) -> None:
+    #     self._options.update(key, func)
 
-    def rmvOption(self, key: int) -> None:
-        del self.options[key]
+    # def rmvOption(self, key: int) -> None:
+    #     del self._options[key]
