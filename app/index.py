@@ -46,12 +46,19 @@ def main():
     )
     menu.getOption()[int(input("Choose an option: "))]()
 
+# TODO: implement
 def clipFromCli():
-    print("Creates clip from CLI arg")
+    getClip(
+        input("Insert video link: "),
+        [input("Insert time range to cut(separated with ','): ").split(',')]
+        )
 
+
+# TODO: implement
 def clipsFromDesc():
     print("Create clips from video desc")
 
+# TODO: implement
 def clipsFromFile():
     print("Creates clips from file")
 
