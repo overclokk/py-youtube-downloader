@@ -4,6 +4,7 @@ import os
 
 from pytube import YouTube
 from pytube.cli import on_progress
+from http.client import IncompleteRead
 
 from utils.functions import generate_clips
 from utils.Menu import Menu
@@ -89,6 +90,11 @@ def getClip(videoURL: str, timeRange: list):
         generate_clips(file_path, timeRange)
 
         input('Hit Enter to exit')
+
+    # https://stackoverflow.com/questions/41529016/python-http-client-incomplete-read0-bytes-read-error
+    except IncompleteRead as e:
+        print("Error", e)
+
     except Exception as e:
         print("Error", e)  # to handle exception
         input('Hit Enter to exit')
