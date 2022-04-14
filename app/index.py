@@ -1,11 +1,12 @@
 # import win32clipboard
-import argparse
+# import argparse
 import os
 
 from pytube import YouTube
 from pytube.cli import on_progress
 
-from functions import generate_clips
+from utils.functions import generate_clips
+from utils.Menu import Menu
 
 
 # https://superuser.com/questions/1567253/how-to-download-chapters-of-a-youtube-video-as-separate-video-files
@@ -22,16 +23,46 @@ from functions import generate_clips
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-v", "--video", help="Link of the youtube video to download", required=True)
-    parser.add_argument("-c", "--cut", help="Timestamp range to cut, Format: [HH:]MM:SS,[HH:]MM:SS", required=True)
-    # parser.add_argument("--clipboard", help="Copies video link from clipboard")
-    # parser.add_argument("--file", help="Gets video and timestamps from a file")
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument("-v", "--video", help="Link of the youtube video to download", required=True)
+    # parser.add_argument("-c", "--cut", help="Timestamp range to cut, Format: [HH:]MM:SS,[HH:]MM:SS", required=True)
+    # # parser.add_argument("--clipboard", help="Copies video link from clipboard")
+    # # parser.add_argument("--file", help="Gets video and timestamps from a file")
 
-    args = parser.parse_args()
-    getClip(args.video, [args.cut.split(',')])
+    # args = parser.parse_args()
+    # getClip(args.video, [args.cut.split(',')])
+    menu = Menu({
+        1: clipFromCli,
+        2: clipsFromDesc,
+        3: clipsFromFile
+    })
+
+    print(
+    '''
+    1) - Create clip from CLI argument
+    2) - Create clips from video description
+    3) - Create clips from file
+    '''
+    )
+    menu.getOption()[int(input("Choose an option: "))]()
+
+# Gets a single clip from video
+def clipFromCli() -> None:
+    getClip(
+        input("Insert video link: "),
+        [input("Insert time range to cut(separated with ','): ").split(',')]
+        )
 
 
+# TODO: implement
+def clipsFromDesc():
+    print("Create clips from video desc")
+
+# TODO: implement
+def clipsFromFile():
+    print("Creates clips from file")
+
+# TODO: Refactor it in a way to be able to use a single function for all options
 # Downloads a video and generates a clip based on the timestamp range given
 def getClip(videoURL: str, timeRange: list):
     try:

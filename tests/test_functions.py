@@ -1,6 +1,6 @@
 import unittest
 
-from app.functions import get_seconds, parse_file, convert_chapter_format_to_start_end_format
+from app.utils.functions import get_seconds, parse_file, convert_chapter_format_to_start_end_format
 
 
 class FunctionsTestCase(unittest.TestCase):
