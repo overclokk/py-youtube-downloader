@@ -1,6 +1,7 @@
 # import win32clipboard
 # import argparse
 import os
+import glob
 
 from pytube import YouTube
 from pytube.cli import on_progress
@@ -33,44 +34,67 @@ def main():
     # args = parser.parse_args()
     # getClip(args.video, [args.cut.split(',')])
     menu = Menu({
-        1: clipFromCli,
-        2: clipsFromDesc,
-        3: clipsFromFile
+        1: download_video,
+        2: create_clip_from_cli_arguments,
+        3: create_clips_from_video_chapters,
+        4: create_clips_from_text_file,
+        5: create_clips_from_downloaded_video
     })
 
     print(
-    '''
-    1) - Create clip from CLI argument
-    2) - Create clips from video description
-    3) - Create clips from file
-    '''
+        '''
+        1) - Download video
+        2) - Create clip from CLI argument
+        3) - Create clips from video description
+        4) - Create clips from file
+        5) - Create clips from downloaded video
+        '''
     )
+
     menu.getOption()[int(input("Choose an option: "))]()
 
+
+# TODO: implement
+def download_video():
+    print("Download the video")
+    input("Insert the clip time range in `[HH:]MM:SS,[HH:]MM:SS` format: ")
+
+
 # Gets a single clip from video
-def clipFromCli() -> None:
-    getClip(
+def create_clip_from_cli_arguments() -> None:
+    get_clip(
         input("Insert video link: "),
-        [input("Insert time range to cut(separated with ','): ").split(',')]
-        )
+        [input("Insert clip time range [HH:]MM:SS,[HH:]MM:SS: ").split(',')]
+    )
 
 
 # TODO: implement
-def clipsFromDesc():
+def create_clips_from_video_chapters() -> None:
     print("Create clips from video desc")
 
+
 # TODO: implement
-def clipsFromFile():
+def create_clips_from_text_file() -> None:
     print("Creates clips from file")
+
+
+def create_clips_from_downloaded_video() -> None:
+    files = glob.glob('video' + os.path.sep + '*.mp4')
+    for i, name in enumerate(files):
+        print(f'{i}) - ' + name)
+
+    selected_video = int(input("Select video by index: "))
+    generate_clips(
+        files[selected_video],
+        [input("Insert clip time range [HH:]MM:SS,[HH:]MM:SS: ").split(',')]
+    )
+
 
 # TODO: Refactor it in a way to be able to use a single function for all options
 # Downloads a video and generates a clip based on the timestamp range given
-def getClip(videoURL: str, timeRange: list):
+def get_clip(video_url: str, time_range: list) -> None:
     try:
-        # where to save
-        save_path = "video"
-
-        yt = YouTube(videoURL, on_progress_callback=on_progress)
+        yt = YouTube(video_url, on_progress_callback=on_progress)
 
         # print('Available formats :')
         # for stream in yt.streams.all():
@@ -79,15 +103,18 @@ def getClip(videoURL: str, timeRange: list):
         # itag = input('\nEnter the itag number to download video of that format: ')
         # stream = yt.streams.get_by_itag( itag )
         stream = yt.streams.get_highest_resolution()
+
+        # where to save
+        save_path = "video"
         file_path = save_path + os.path.sep + stream.default_filename
 
         print('\nDownloading--- ' + yt.title + ' into location : ' + file_path)
 
+        stream.download(save_path)
+
         # desc_lines = yt.description.splitlines()
         # timeRange = convert_chapter_format_to_start_end_format(parse_lines(desc_lines))
-
-        stream.download(save_path)
-        generate_clips(file_path, timeRange)
+        generate_clips(file_path, time_range)
 
         input('Hit Enter to exit')
 
