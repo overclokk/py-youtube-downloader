@@ -12,7 +12,7 @@ from utils.Downloader import Downloader
 from utils.Menu import Menu
 from utils.functions import generate_clips, convert_chapter_format_to_start_end_format, parse_lines
 
-VIDEO_DIR_CONTAINER = 'video'
+WORKING_DIR = 'video'
 
 
 # https://superuser.com/questions/1567253/how-to-download-chapters-of-a-youtube-video-as-separate-video-files
@@ -66,7 +66,7 @@ def download_video():
         print(f'Video {url} is unavailable, skipping.')
     else:
         downloader: Downloader = Downloader(yt)
-        downloader.in_dir(VIDEO_DIR_CONTAINER).download()
+        downloader.in_dir(WORKING_DIR).download()
 
 
 # Gets a single clip from video
@@ -83,7 +83,7 @@ def create_clip_from_cli_arguments() -> None:
     else:
         yt.register_on_complete_callback(on_complete)
         downloader: Downloader = Downloader(yt)
-        downloader.in_dir(VIDEO_DIR_CONTAINER).download()
+        downloader.in_dir(WORKING_DIR).download()
 
 
 def create_clips_from_video_chapters() -> None:
@@ -94,7 +94,7 @@ def create_clips_from_video_chapters() -> None:
         print(f'Video {url} is unavailable, skipping.')
     else:
         downloader: Downloader = Downloader(yt)
-        file_path = downloader.in_dir(VIDEO_DIR_CONTAINER).download()
+        file_path = downloader.in_dir(WORKING_DIR).download()
         desc_lines = yt.description.splitlines()
         time_range = convert_chapter_format_to_start_end_format(parse_lines(desc_lines))
         generate_clips(file_path, time_range)
