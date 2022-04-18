@@ -1,14 +1,18 @@
 # import win32clipboard
 # import argparse
-import os
 import glob
+import os
 
 from pytube import YouTube
 from pytube.cli import on_progress
-from http.client import IncompleteRead
+from pytube.exceptions import VideoUnavailable
+from pytube.streams import Stream
 
-from utils.functions import generate_clips
+from utils.Downloader import Downloader
 from utils.Menu import Menu
+from utils.functions import generate_clips, convert_chapter_format_to_start_end_format, parse_lines
+
+VIDEO_DIR_CONTAINER = 'video'
 
 
 # https://superuser.com/questions/1567253/how-to-download-chapters-of-a-youtube-video-as-separate-video-files
@@ -54,23 +58,46 @@ def main():
     menu.getOption()[int(input("Choose an option: "))]()
 
 
-# TODO: implement
 def download_video():
-    print("Download the video")
-    input("Insert the clip time range in `[HH:]MM:SS,[HH:]MM:SS` format: ")
+    url = input("Insert video link: ")
+    try:
+        yt = YouTube(url, on_progress_callback=on_progress)
+    except VideoUnavailable:
+        print(f'Video {url} is unavailable, skipping.')
+    else:
+        downloader: Downloader = Downloader(yt)
+        downloader.in_dir(VIDEO_DIR_CONTAINER).download()
 
 
 # Gets a single clip from video
 def create_clip_from_cli_arguments() -> None:
-    get_clip(
-        input("Insert video link: "),
-        [input("Insert clip time range [HH:]MM:SS,[HH:]MM:SS: ").split(',')]
-    )
+    def on_complete(stream: Stream, file_handle: str):
+        time_range = [input("Insert clip time range [HH:]MM:SS,[HH:]MM:SS: ").split(',')]
+        generate_clips(file_handle, time_range)
+
+    url = input("Insert video link: ")
+    try:
+        yt = YouTube(url, on_progress_callback=on_progress)
+    except VideoUnavailable:
+        print(f'Video {url} is unavailable, skipping.')
+    else:
+        yt.register_on_complete_callback(on_complete)
+        downloader: Downloader = Downloader(yt)
+        downloader.in_dir(VIDEO_DIR_CONTAINER).download()
 
 
-# TODO: implement
 def create_clips_from_video_chapters() -> None:
-    print("Create clips from video desc")
+    url = input("Insert video link: ")
+    try:
+        yt = YouTube(url, on_progress_callback=on_progress)
+    except VideoUnavailable:
+        print(f'Video {url} is unavailable, skipping.')
+    else:
+        downloader: Downloader = Downloader(yt)
+        file_path = downloader.in_dir(VIDEO_DIR_CONTAINER).download()
+        desc_lines = yt.description.splitlines()
+        time_range = convert_chapter_format_to_start_end_format(parse_lines(desc_lines))
+        generate_clips(file_path, time_range)
 
 
 # TODO: implement
@@ -88,43 +115,6 @@ def create_clips_from_downloaded_video() -> None:
         files[selected_video],
         [input("Insert clip time range [HH:]MM:SS,[HH:]MM:SS: ").split(',')]
     )
-
-
-# TODO: Refactor it in a way to be able to use a single function for all options
-# Downloads a video and generates a clip based on the timestamp range given
-def get_clip(video_url: str, time_range: list) -> None:
-    try:
-        yt = YouTube(video_url, on_progress_callback=on_progress)
-
-        # print('Available formats :')
-        # for stream in yt.streams.all():
-        # print(stream)
-
-        # itag = input('\nEnter the itag number to download video of that format: ')
-        # stream = yt.streams.get_by_itag( itag )
-        stream = yt.streams.get_highest_resolution()
-
-        # where to save
-        save_path = "video"
-        file_path = save_path + os.path.sep + stream.default_filename
-
-        print('\nDownloading--- ' + yt.title + ' into location : ' + file_path)
-
-        stream.download(save_path)
-
-        # desc_lines = yt.description.splitlines()
-        # timeRange = convert_chapter_format_to_start_end_format(parse_lines(desc_lines))
-        generate_clips(file_path, time_range)
-
-        input('Hit Enter to exit')
-
-    # https://stackoverflow.com/questions/41529016/python-http-client-incomplete-read0-bytes-read-error
-    except IncompleteRead as e:
-        print("Error", e)
-
-    except Exception as e:
-        print("Error", e)  # to handle exception
-        input('Hit Enter to exit')
 
 
 if __name__ == "__main__":
